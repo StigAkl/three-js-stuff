@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>Sphere stuff</title>
+
+		<script src="build/three.min.js"></script>
+		<script src="js/OrbitControls.js"></script>
+		<script src="app.js"></script>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+
+			<canvas id="canvas"></canvas>
+		<script>
+
+			let app = new App(); 
+			var animate = function () {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += 0.01;
+				cube.rotation.y += 0.01;
+				renderer.render( scene, camera );
+			};
+
+		window.addEventListener('resize', onWindowResize, true); 
+
+		function onWindowResize() {
+			app.resizeCanvas(); 
+		}
+
+			
+		</script>
+	</body>
+</html>
