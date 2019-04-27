@@ -140,7 +140,7 @@ class App {
     }
 
     animate() {
-        this.sphere.rotation.y+= 0.003; 
+        this.sphere.rotation.y+= 0.0007; 
     }
 
     render() {
