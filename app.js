@@ -2,6 +2,7 @@ class App {
     constructor() {
 
         this.time = 0; 
+        this.temperature = 14; 
         //Setup
         this.scene = new THREE.Scene(); 
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); 
@@ -26,17 +27,17 @@ class App {
         //Sphere texture
         this.texture = new THREE.TextureLoader().load('textures/earth_texture.jpg');
 
-        this.plane = new THREE.Mesh(new THREE.PlaneGeometry(60, 60, 50, 50), new THREE.MeshStandardMaterial( {wireframe: true}));
+        this.plane = new THREE.Mesh(new THREE.PlaneGeometry(200, 200, 50, 50), new THREE.MeshStandardMaterial( {color: 0x222222, wireframe: true}));
         this.createGravityWell();  
         this.plane.rotation.x = Math.PI / 2; 
         this.plane.castShadow=true; 
         this.plane.receiveShadow=true; 
-        this.translateObject(this.plane, 0, 3, 0); 
+        this.translateObject(this.plane, 0, -15, 0); 
         this.plane.receiveShadow=true; 
 
 
         //Earth
-        this.geometry = new THREE.SphereBufferGeometry(10,32,32); 
+        this.geometry = new THREE.SphereBufferGeometry(25,64,64); 
         this.material = new THREE.MeshPhongMaterial( {  map: this.texture});
         this.sphere = new THREE.Mesh(this.geometry, this.material); 
         this.sphere.castShadow=true; 
@@ -47,18 +48,18 @@ class App {
 
 
         //Light
-        this.light = new THREE.PointLight(0xffffff, 10, 50); 
-        this.light.position.set(0,20,25); 
+        this.light = new THREE.DirectionalLight(this.generateColor(this.temperature), 2); 
+        this.light.position.set(0,50,70); 
         this.light.castShadow=true; 
-        this.ambientLight = new THREE.AmbientLight(0xffffff, 1); 
-        this.ambientLight.position.set(0,10,0); 
+        this.ambientLight = new THREE.AmbientLight(this.generateColor(this.temperature), 8); 
+        this.ambientLight.position.set(10,10,10); 
 
         //Add to scene
         this.scene.add(this.ambientLight);
         this.scene.add(this.sphere); 
         this.scene.add(this.plane); 
         this.scene.add(this.light); 
-        this.camera.position.z = 30; 
+        this.camera.position.z = 90; 
 
         this.render(); 
     }
@@ -83,13 +84,18 @@ class App {
 
         for(var i = 0; i < vertices.length; i++) {
             let distance = this.distanceVector(new THREE.Vector3(vertices[i].x, vertices[i].y, vertices[i].z), center);
-            let z = Math.pow((distance - 30)/6, 2); 
+            let z = Math.pow((distance - 40)/8, 2); 
             
-            if(distance < 30) 
+            if(distance < 40) 
                 vertices[i].z = z; 
         }
 
         this.plane.geometry.vertices=vertices; 
+    }
+
+    createStars(radius, segments) { 
+        return new THREE.Mesh(new THREE.SphereGeometry(radius, segments, segments), new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('https://cdn.rawgit.com/bubblin/The-Solar-System/master/images/shared/galaxy_starfield.jpg'), side: THREE.BackSide 
+    }));
     }
 
     distanceVector( v1, v2 )
@@ -113,6 +119,24 @@ class App {
     
         mesh.localToWorld( middle );
         return middle;
+    }
+
+    generateColor(temperature) {
+        let colors = [0x00bcff, 0x84b2d9, 0xafa8b3, 0xf18741, 0xffc900, 0xff0010]; 
+
+        let color = colors[0]; 
+        if(temperature >= 15 && temperature < 18) {
+            color = colors[1];
+        } else if(temperature >= 18 && temperature < 20) {
+            color = colors[2]; 
+        } else if(temperature >= 20 && temperature < 23) {
+            color = colors[3]; 
+        } else if(temperature >= 23 && temperature < 25){
+            color = colors[4]; 
+        } else if(temperature >= 25) {
+            color = colors[5]; 
+        }
+        return color; 
     }
 
     animate() {
